@@ -1,6 +1,9 @@
 clear
 close all
 
+
+%% Circular Motion
+% First order form
 function qdot = circ_orbit(t, q)
     mu = 6.6743e-11 * 5.972e24 / 1000^3; % km^3 / s^2 Standard gravitational constant for Earth
     qdot = zeros(4,1);
@@ -10,6 +13,7 @@ function qdot = circ_orbit(t, q)
     qdot(4) = -mu * q(3) / ( sqrt(q(1)^2 + q(3)^2) ^ 3 );
 end
 
+%
 % Initial conditions
 x0 = 6500; % km
 y0 = 2700; % km
@@ -22,6 +26,7 @@ xdot0 = -V * y0/r; % km/s
 ydot0 = V * x0/r; % km/s
 
 q0 = [x0 xdot0 y0 ydot0];
+
 
 % Time interval
 tspan = [0 3600*17]; % s
@@ -104,3 +109,111 @@ title('Orbital Trajectory in XY Plane')
 axis equal 
 
 latex_fig(12, 6.5, 3.3)
+
+%% Stuck Thruster
+% Define thrust values to test
+thrust_values = [0, 0.1, 0.2, 0.3];
+
+% Initial conditions
+x0 = 6500; % km
+y0 = 2700; % km
+mu = 6.6743e-11 * 5.972e24 / 1000^3; % km^3 / s^2 Standard gravitational constant for Earth
+r = sqrt(x0^2 + y0^2); % km radius from Earth's center to spacecraft
+V = sqrt(mu / r); % km/s orbital tangential speed
+xdot0 = -V * y0 / r; % km/s
+ydot0 = V * x0 / r; % km/s
+q0 = [x0 xdot0 y0 ydot0];
+
+% Time interval
+tspan = [0 3600*20]; % s
+
+% Set up tolerances for ODE solver
+options = odeset('RelTol', 1e-5, 'AbsTol', 1e-6);
+
+% Colors for plotting
+colors = lines(length(thrust_values));
+
+% Individual plots for positions
+figure;
+hold on;
+for i = 1:length(thrust_values)
+    % Current thrust value
+    thrust = thrust_values(i);
+
+    % Solve ODE
+    [t, q] = ode45(@(t, q) stuck_thruster(t, q, thrust), tspan, q0, options);
+
+    % Time in hours
+    t = t / 3600; % Convert seconds to hours
+
+    % Extract positions
+    x = q(:, 1);
+    y = q(:, 3);
+
+    % Plot positions
+    plot(t, x, 'Color', colors(i, :), 'LineWidth', 2, 'DisplayName', sprintf('Thrust = %.2f N (x)', thrust));
+    plot(t, y, '--', 'Color', colors(i, :), 'LineWidth', 2, 'DisplayName', sprintf('Thrust = %.2f N (y)', thrust));
+end
+xlabel('Time (hours)');
+ylabel('Position (km)');
+title('X and Y Positions vs Time');
+legend('Location', 'best');
+hold off;
+
+% Individual plots for velocities
+figure;
+hold on;
+for i = 1:length(thrust_values)
+    % Current thrust value
+    thrust = thrust_values(i);
+
+    % Solve ODE
+    [t, q] = ode45(@(t, q) stuck_thruster(t, q, thrust), tspan, q0, options);
+
+    % Time in hours
+    t = t / 3600; % Convert seconds to hours
+
+    % Extract velocities
+    xdot = q(:, 2);
+    ydot = q(:, 4);
+
+    % Plot velocities
+    plot(t, xdot, 'Color', colors(i, :), 'LineWidth', 2, 'DisplayName', sprintf('Thrust = %.2f N (x-dot)', thrust));
+    plot(t, ydot, '--', 'Color', colors(i, :), 'LineWidth', 2, 'DisplayName', sprintf('Thrust = %.2f N (y-dot)', thrust));
+end
+xlabel('Time (hours)');
+ylabel('Velocity (km/s)');
+title('X and Y Velocities vs Time');
+legend('Location', 'best');
+hold off;
+
+% Individual plot for orbital trajectories
+figure;
+hold on;
+for i = 1:length(thrust_values)
+    thrust = thrust_values(i);
+    [t, q] = ode45(@(t, q) stuck_thruster(t, q, thrust), tspan, q0, options);
+    x = q(:, 1);
+    y = q(:, 3);
+    plot(x, y, 'Color', colors(i, :), 'LineWidth', 2, 'DisplayName', sprintf('Thrust = %.2f N', thrust));
+end
+xlabel('x position (km)');
+ylabel('y position (km)');
+title('Orbital Trajectory in XY Plane');
+axis equal;
+legend('Location', 'best');
+hold off;
+
+% Define the stuck_thruster function
+function qdot = stuck_thruster(t, q, thrust)
+    mu = 6.6743e-11 * 5.972e24 / 1000^3; % km^3 / s^2 Standard gravitational constant for Earth
+    m = 1700; % kg
+    T = thrust; % Newtons 
+
+    qdot = zeros(4, 1);
+    qdot(1) = q(2);
+    qdot(2) = -mu * q(1) / (sqrt(q(1)^2 + q(3)^2) ^ 3) - (T / m * q(3)) / sqrt(q(1)^2 + q(3)^2);
+    qdot(3) = q(4);
+    qdot(4) = -mu * q(3) / (sqrt(q(1)^2 + q(3)^2) ^ 3) + (T / m * q(1)) / sqrt(q(1)^2 + q(3)^2);
+end
+
