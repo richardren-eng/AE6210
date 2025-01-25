@@ -1,8 +1,6 @@
+%% Circular Motion
 clear
 close all
-
-
-%% Circular Motion
 % First order form
 function qdot = circ_orbit(t, q)
     mu = 6.6743e-11 * 5.972e24 / 1000^3; % km^3 / s^2 Standard gravitational constant for Earth
@@ -13,7 +11,7 @@ function qdot = circ_orbit(t, q)
     qdot(4) = -mu * q(3) / ( sqrt(q(1)^2 + q(3)^2) ^ 3 );
 end
 
-%
+
 % Initial conditions
 x0 = 6500; % km
 y0 = 2700; % km
@@ -71,7 +69,7 @@ ylabel('Velocity (km/h)')
 title('X and Y Velocities vs Time')
 legend('Location', 'best') 
 hold off
-
+latex_fig(12, 5.4, 2.75)
 
 % Invariant Values vs Tim
 % Distance from Earth's center to spacecraft
@@ -98,7 +96,7 @@ ylabel('Percent Error (%)')
 title('Percent Errors of Invariants')
 legend('Location', 'best')
 hold off
-latex_fig(12, 6.5, 3.3)
+latex_fig(12, 6, 3.3)
 
 % Orbit in XY plane
 subplot(2,1,2)
@@ -108,7 +106,8 @@ ylabel('y position (km)')
 title('Orbital Trajectory in XY Plane')
 axis equal 
 
-latex_fig(12, 6.5, 3.3)
+latex_fig(12, 5.4, 2.75)
+
 
 %% Stuck Thruster
 % Define thrust values to test
@@ -159,6 +158,7 @@ ylabel('Position (km)');
 title('X and Y Positions vs Time');
 legend('Location', 'best');
 hold off;
+latex_fig(12, 5.4, 2.75)
 
 % Individual plots for velocities
 figure;
@@ -186,6 +186,7 @@ ylabel('Velocity (km/s)');
 title('X and Y Velocities vs Time');
 legend('Location', 'best');
 hold off;
+latex_fig(12, 5.4, 2.75)
 
 % Individual plot for orbital trajectories
 figure;
@@ -201,8 +202,11 @@ xlabel('x position (km)');
 ylabel('y position (km)');
 title('Orbital Trajectory in XY Plane');
 axis equal;
+set(gca,'ytick', -5e4:2.5e4:25e4)
 legend('Location', 'best');
+axis equal
 hold off;
+latex_fig(12, 5.4, 2.75)
 
 % Define the stuck_thruster function
 function qdot = stuck_thruster(t, q, thrust)
