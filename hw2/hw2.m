@@ -1,5 +1,7 @@
 clear
-% Constants
+addpath('..')        
+
+% Known Values
 t = 25; % s
 wia_A = [1; 2; 3]; % rad/s
 alpha_ia_A = [0.1; 0.2; 0.3]; % rad/s
@@ -34,9 +36,6 @@ RHB = [1             0         0;
 RAB = RAH*RHB;
 
 % Problem 1
-% Angular velocity of frame A relative to frame I
-%wia_A = alpha_ia_A * t;
-
 % Angular velocity of frame H relative to frame A
 wah_A = [0; 0; wH];
 
@@ -68,7 +67,7 @@ rop_H = [0; rh; 0];
 rpt_B = [0; L; 0];
 
 % Velocity of rotor tip relative to frame I
-iv_qt_A = v_ic_A + cross(wia_A , rco_A) + cross(wia_A + wah_A , RAH*rop_H) + cross(wib_A , RAB*rpt_B)
+v_it_A = v_ic_A + cross(wia_A , rco_A) + cross(wia_A + wah_A , RAH*rop_H) + cross(wib_A , RAB*rpt_B)
 
 % Problem 4
 wih_A = wia_A + wah_A;
@@ -79,4 +78,5 @@ first_term = a_ic_A;
 second_term = cross(alpha_ia_A , rco_A) + cross(wia_A , cross(wia_A , rco_A));
 third_term = cross(alpha_ia_A , RAH*rop_H) + cross(cross(wia_A , wah_A) , RAH*rop_H) + cross(wih_A , cross(wih_A , RAH*rop_H));
 fourth_term = cross(alpha_ib_A , RAB*rpt_B) + cross(wib_A , cross(wib_A , RAB*rpt_B));
-ia_qt_A = first_term + second_term + third_term + fourth_term
+
+a_it_A = first_term + second_term + third_term + fourth_term

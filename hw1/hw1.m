@@ -1,6 +1,8 @@
 %% Circular Motion
 clear
 close all
+addpath('..')   
+
 % First order form
 function qdot = circ_orbit(t, q)
     mu = 6.6743e-11 * 5.972e24 / 1000^3; % km^3 / s^2 Standard gravitational constant for Earth
