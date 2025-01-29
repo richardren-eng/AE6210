@@ -48,8 +48,6 @@ wib_B = RAB' * wib_A
 
 % Problem 2
 % Angular acceleration of frame B relative to frame H
-alpha_hb_H = [0; 0; -wb^2*beta1*sin(wb*t)];
-
 % Derivative in the H frame of w_{hb}
 D_whb_H = [-wb^2*beta1*sin(wb*t) ; 0 ; 0]; 
 
